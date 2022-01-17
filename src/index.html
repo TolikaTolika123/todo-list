@@ -5,8 +5,50 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>To-do List</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  
+  <div class="menu">
+    <ul class="filters">
+      <li class="fileters__item">
+        <button class="fileters__item-btn">Inbox</button>
+      </li>
+      <li class="fileters__item">
+        <button class="fileters__item-btn">Today</button>
+      </li>
+      <li class="fileters__item">
+        <button class="fileters__item-btn">Upcoming</button>
+      </li>
+    </ul>
+    <div class="sidebar">
+      <button class="sidebar__list">Projects</button>
+      <button class="sidebar__add">+</button>
+    </div>
+    <ul class="projects">
+      <li class="projects__item">
+        <span class="projects__text">Welcome</span>
+        <span class="projcets__count">10</span>
+      </li>
+      <li class="projects__item">
+        <span class="projects__text">New Projcet</span>
+        <span class="projcets__count">1</span>
+      </li>
+    </ul>
+  </div>
+  <div class="main">
+    <h3 class="main__title">Inbox</h3>
+    <ul class="main__list">
+      <li class="main__list-item">
+        <button>
+          <span class="icon">
+            <svg width="13" height="13"><path d="M6 6V.5a.5.5 0 0 1 1 0V6h5.5a.5.5 0 1 1 0 1H7v5.5a.5.5 0 1 1-1 0V7H.5a.5.5 0 0 1 0-1H6z" fill="currentColor" fill-rule="evenodd"></path></svg>
+          </span>
+          Add task
+        </button>
+      </li>
+    </ul>
+  </div>
 </body>
 </html>
