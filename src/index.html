@@ -12,43 +12,45 @@
 <body>
   <div class="menu">
     <ul class="filters">
-      <li class="fileters__item">
-        <button class="fileters__item-btn">Inbox</button>
+      <li class="filters__item active">
+        <button class="filters__item-btn inbox">Inbox <span class="count">1</span></button>
       </li>
-      <li class="fileters__item">
-        <button class="fileters__item-btn">Today</button>
+      <li class="filters__item">
+        <button class="filters__item-btn today">Today <span class="count"></span></button>
       </li>
-      <li class="fileters__item">
-        <button class="fileters__item-btn">Upcoming</button>
+      <li class="filters__item">
+        <button class="filters__item-btn upcoming">Upcoming <span class="count"></span></button>
       </li>
     </ul>
     <div class="sidebar">
-      <button class="sidebar__list">Projects</button>
-      <button class="sidebar__add">+</button>
+      <button class="sidebar__list active">Projects</button>
+      <button class="sidebar__add"><img src="./assets/images/plus.svg" alt=""></button>
     </div>
     <ul class="projects">
-      <li class="projects__item">
+      <li class="projects__item active">
         <span class="projects__text">Welcome</span>
-        <span class="projcets__count">10</span>
+        <span class="count">10</span>
       </li>
       <li class="projects__item">
         <span class="projects__text">New Projcet</span>
-        <span class="projcets__count">1</span>
+        <span class="count">1</span>
       </li>
     </ul>
   </div>
   <div class="main">
+    <div class="main__inner">
     <h3 class="main__title">Inbox</h3>
     <ul class="main__list">
       <li class="main__list-item">
-        <button>
+        <button class="main__add">
           <span class="icon">
-            <svg width="13" height="13"><path d="M6 6V.5a.5.5 0 0 1 1 0V6h5.5a.5.5 0 1 1 0 1H7v5.5a.5.5 0 1 1-1 0V7H.5a.5.5 0 0 1 0-1H6z" fill="currentColor" fill-rule="evenodd"></path></svg>
+            <svg width="13" height="13" fill="red"><path d="M6 6V.5a.5.5 0 0 1 1 0V6h5.5a.5.5 0 1 1 0 1H7v5.5a.5.5 0 1 1-1 0V7H.5a.5.5 0 0 1 0-1H6z"  fill-rule="evenodd"></path></svg>
           </span>
           Add task
         </button>
       </li>
     </ul>
+  </div>
   </div>
 </body>
 </html>
