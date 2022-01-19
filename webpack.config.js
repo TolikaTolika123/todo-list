@@ -61,6 +61,7 @@ module.exports = {
   resolve: {
     alias: {
       '@images': path.resolve(__dirname, 'src/assets/images'),
+      '@modules': path.resolve(__dirname, 'src/modules'),
       '@': path.resolve(__dirname, 'src'),
     }
   },
