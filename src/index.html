@@ -42,12 +42,14 @@
     <h3 class="main__title">Inbox</h3>
     <ul class="main__list">
       <li class="main__list-item">
-        <button class="main__add">
-          <span class="icon">
-            <svg width="13" height="13" fill="red"><path d="M6 6V.5a.5.5 0 0 1 1 0V6h5.5a.5.5 0 1 1 0 1H7v5.5a.5.5 0 1 1-1 0V7H.5a.5.5 0 0 1 0-1H6z"  fill-rule="evenodd"></path></svg>
-          </span>
-          Add task
-        </button>
+        <form class="main__item-create">
+          <div>
+            <input type="text" class="main__item-title" placeholder="e.g., Family lunch on Sunday at 11am">
+            <textarea class="main__item-description" placeholder="Description"></textarea>
+          </div>
+          <button class="main__item-add">Add tast</button>
+          <button class="main__item-cancel">Cancel</button>
+        </form>
       </li>
     </ul>
   </div>

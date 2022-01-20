@@ -189,6 +189,59 @@ body {
       }
     }
   }
+  &__item-create {
+    div {
+      border: 1px solid #bdc3c7;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+  }
+  &__item-title,
+  &__item-description {
+    display: block;
+    width: 100%;
+    border: 0;
+    font-size: $regularFz;
+    line-height: 20px;
+    &::placeholder {
+      color: #bdc3c7;
+    }
+  }
+  &__item-title {
+    font-weight: 500;
+    &::placeholder {
+      font-weight: 500;
+    }
+  }
+  &__item-description {
+    resize: none;
+  }
+  &__item-add,
+  &__item-cancel {
+    border-radius: 5px;
+    padding: 7px 10px;
+    font-size: $regularFz;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  &__item-add {
+    background-color: red;
+    color: #fff;
+    border: 0;
+    margin-right: 10px;
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
+  &__item-cancel {
+    background-color: transparent;
+    border: 1px solid #bdc3c7;
+    &:hover {
+      background-color: #ecf0f1;
+    }
+  }
 }
 
 .icon {
