@@ -132,8 +132,11 @@ body {
   &__item {
     cursor: pointer;
     position: relative;
-    padding: 10px 20px 10px 40px;
+    padding: 10px 5px 10px 40px;
     border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     &::before {
       content: "";
       position: absolute;
@@ -144,6 +147,33 @@ body {
       height: 12px;
       background-color: #b2bec3;
       border-radius: 50%;
+    }
+    &:hover {
+      .count {
+        display: none;
+      }
+      .projects__item-delete {
+        display: block;
+      }
+    }
+  }
+  &__item-delete {
+    display: none;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    svg {
+      fill: #636e72;
+      width: 17px;
+      height: 17px;
+    }
+    &:hover {
+      svg {
+        fill: #000;
+      }
     }
   }
 }

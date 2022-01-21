@@ -1,6 +1,12 @@
-import {Project, ProjectPrint} from './projects'
+import { Project, ProjectPrint } from './projects'
 
+const addProjects = document.querySelector('.sidebar__add')
+const showProjects = document.querySelector('.sidebar__list');
 const main = document.querySelector('.main')
+const projects = document.querySelector('.projects');
+
+
+const projectsList = [];
 
 function addToMain(project) {
   main.innerHTML = '';
@@ -50,8 +56,6 @@ function addToMain(project) {
   mainInner.appendChild(mainList)
   main.appendChild(mainInner)
 
-
-
   deleteItem(project)
 
   const addBtn = document.querySelector('.main__add');
@@ -82,9 +86,12 @@ function addNewItem(project, e) {
       title: input.value,
       description: textarea.value
     })
+
     addToMain(project)
+    changeCountNumber(project)
   })
-  
+
+
 }
 
 function deleteItem(project) {
@@ -94,9 +101,52 @@ function deleteItem(project) {
     checkTodo[i].addEventListener('click', () => {
       mainListItem[i].remove()
       project.items.splice(i, 1);
+      changeCountNumber(project)
     })
   }
 }
 
+showProjects.addEventListener('click', () => {
+  showProjects.classList.toggle('active')
+  if (showProjects.classList.contains('active')) {
+    for (let i = 0; i < projectsList.length; i++) {
+      const print = new ProjectPrint(projectsList[i])
 
-export { addToMain }
+      print.html()
+    }
+  } else {
+    projects.innerHTML = ''
+  }
+
+})
+
+addProjects.addEventListener('click', () => {
+  let title = prompt('Add project title')
+  const newProject = new Project(title);
+  projectsList.push(newProject)
+
+  if (showProjects.classList.contains('active')) {
+    const print = new ProjectPrint(newProject)
+
+      print.html()
+  }
+  console.log(projectsList)
+})
+
+function changeCountNumber(project) {
+  const projectsTitles = document.querySelectorAll('.projects__text');
+
+  let item = Array.from(projectsTitles).find(p => p.innerText == project.title)
+  project.items.length > 0 ? item.parentElement.lastChild.innerText = project.items.length : item.parentElement.lastChild.innerText = '';
+}
+
+function deleteProject(project) {
+  const projectsTitles = document.querySelectorAll('.projects__text');
+
+  let item = Array.from(projectsTitles).find(p => p.innerText == project.title)
+
+  item.parentElement.remove();
+  projectsList.splice(projectsList.indexOf(project), 1);
+}
+
+export { addToMain, deleteProject }
