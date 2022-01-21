@@ -1,34 +1,6 @@
-const projects = document.querySelector('.projects');
+import {Project, ProjectPrint} from './projects'
 
 const main = document.querySelector('.main')
-const addProjects = document.querySelector('.sidebar__add')
-
-class Project {
-  constructor(title) {
-    this.title = title;
-    this.items = [];
-  }
-}
-
-class ProjectPrint {
-  constructor(project) {
-    this.project = project;
-  }
-
-  html() {
-    const li = document.createElement('li');
-    li.classList.add('projects__item');
-    const span = document.createElement('span')
-    span.classList.add('projects__text')
-    span.innerText = this.project.title;
-    li.appendChild(span)
-    li.addEventListener('click', () => {
-      addToMain(this.project)
-    })
-    projects.appendChild(li)
-  }
-
-}
 
 function addToMain(project) {
   main.innerHTML = '';
@@ -44,11 +16,21 @@ function addToMain(project) {
     const mainListItem = document.createElement('li');
     mainListItem.classList.add('main__list-item');
 
-    const listItemTitle = document.createElement('p');
+    const listItemHeading = document.createElement('div');
+    listItemHeading.classList.add('main__item-heading')
+    listItemHeading.innerHTML = `<button class="main__item-checkbox">
+    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#bdc3c7"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+  </button>`
+
+    const listItemTitle = document.createElement('h5');
+    listItemTitle.classList.add('main__item-title');
     listItemTitle.innerText = project.items[i].title;
-    mainListItem.appendChild(listItemTitle)
+    listItemHeading.appendChild(listItemTitle);
+
+    mainListItem.appendChild(listItemHeading)
 
     const listItemDescription = document.createElement('p');
+    listItemDescription.classList.add('main__item-description')
     listItemDescription.innerText = project.items[i].description;
     mainListItem.appendChild(listItemDescription)
 
@@ -68,6 +50,10 @@ function addToMain(project) {
   mainInner.appendChild(mainList)
   main.appendChild(mainInner)
 
+
+
+  deleteItem(project)
+
   const addBtn = document.querySelector('.main__add');
   addBtn.addEventListener('click', e => {
     addNewItem(project, e)
@@ -75,18 +61,18 @@ function addToMain(project) {
 }
 
 function addNewItem(project, e) {
-  e.path[1].innerHTML = `<form class="main__item-create">
+  e.path[1].innerHTML = `<form class="main__form-create">
   <div>
-    <input type="text" class="main__item-title" placeholder="e.g., Family lunch on Sunday at 11am">
-    <textarea class="main__item-description" placeholder="Description"></textarea>
+    <input type="text" class="main__form-title" placeholder="e.g., Family lunch on Sunday at 11am">
+    <textarea class="main__form-description" placeholder="Description"></textarea>
   </div>
-  <button class="main__item-add" disabled>Add tast</button>
-  <button class="main__item-cancel">Cancel</button>
+  <button class="main__form-add" disabled>Add tast</button>
+  <button class="main__form-cancel">Cancel</button>
 </form>`
 
-  const input = document.querySelector(".main__item-title");
-  const textarea = document.querySelector('.main__item-description')
-  const add = document.querySelector(".main__item-add");
+  const input = document.querySelector(".main__form-title");
+  const textarea = document.querySelector('.main__form-description')
+  const add = document.querySelector(".main__form-add");
   input.addEventListener("input", () => {
     input.value === "" ? (add.disabled = true) : (add.disabled = false);
   });
@@ -96,19 +82,21 @@ function addNewItem(project, e) {
       title: input.value,
       description: textarea.value
     })
-    console.log(project)
     addToMain(project)
   })
   
 }
 
-addProjects.addEventListener('click', () => {
-  let title = prompt('Add project title')
-  const newProject = new Project(title);
-  const print = new ProjectPrint(newProject)
+function deleteItem(project) {
+  const checkTodo = document.querySelectorAll('.main__item-checkbox');
+  const mainListItem = document.querySelectorAll('.main__list-item')
+  for (let i = 0; i < checkTodo.length; i++) {
+    checkTodo[i].addEventListener('click', () => {
+      mainListItem[i].remove()
+      project.items.splice(i, 1);
+    })
+  }
+}
 
-  print.html()
-})
 
-
-export { addProjects }
+export { addToMain }
