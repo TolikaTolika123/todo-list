@@ -1,4 +1,6 @@
 import { Project, ProjectPrint } from './projects'
+import { inbox, inboxBtn, today, upcoming } from './filters';
+import { format, formatDistance, endOfYesterday } from 'date-fns'
 
 const addProjects = document.querySelector('.sidebar__add')
 const showProjects = document.querySelector('.sidebar__list');
@@ -40,6 +42,32 @@ function addToMain(project) {
     listItemDescription.innerText = project.items[i].description;
     mainListItem.appendChild(listItemDescription)
 
+    const listItemDate = document.createElement('time')
+    listItemDate.classList.add('main__item-date')
+
+    if (project.items[i].date === null) {
+      listItemDate.innerText = ''
+    } else if (format(project.items[i].date, 'MM/dd/yyyy') === format(new Date(), 'MM/dd/yyyy')) {
+      listItemDate.innerText = 'Today'
+    } else {
+      listItemDate.innerText = formatDistance(endOfYesterday(), project.items[i].date)
+    }
+    mainListItem.appendChild(listItemDate)
+
+    if (project.title === 'Upcoming') {
+      const listItemParent = document.createElement('span');
+      listItemParent.classList.add('main__item-parent');
+      listItemParent.innerText = project.items[i].parent;
+      mainListItem.appendChild(listItemParent)
+    }
+
+    if (project.title === 'Today') {
+      const listItemParent = document.createElement('span');
+      listItemParent.classList.add('main__item-parent');
+      listItemParent.innerText = project.items[i].parent;
+      mainListItem.appendChild(listItemParent)
+    }
+
     mainList.appendChild(mainListItem)
   }
 
@@ -69,6 +97,7 @@ function addNewItem(project, e) {
   <div>
     <input type="text" class="main__form-title" placeholder="e.g., Family lunch on Sunday at 11am">
     <textarea class="main__form-description" placeholder="Description"></textarea>
+    <input class="main__form-date" type="date" >
   </div>
   <button class="main__form-add" disabled>Add tast</button>
   <button class="main__form-cancel">Cancel</button>
@@ -76,16 +105,41 @@ function addNewItem(project, e) {
 
   const input = document.querySelector(".main__form-title");
   const textarea = document.querySelector('.main__form-description')
+  const date = document.querySelector('.main__form-date');
   const add = document.querySelector(".main__form-add");
   input.addEventListener("input", () => {
     input.value === "" ? (add.disabled = true) : (add.disabled = false);
   });
 
+  let today = new Date().toISOString().slice(0, 10);
+  date.setAttribute('min', today)
+
   add.addEventListener('click', () => {
-    project.items.push({
-      title: input.value,
-      description: textarea.value
-    })
+    if (project.title === 'Upcoming') {
+      inbox.items.push({
+        title: input.value,
+        description: textarea.value,
+        date: date.valueAsDate,
+        parent: inbox.title
+      })
+      loadUpcoming()
+    }else if (project.title === 'Today') {
+      inbox.items.push({
+        title: input.value,
+        description: textarea.value,
+        date: date.valueAsDate || new Date(),
+        parent: inbox.title
+      })
+      loadToday()
+    } else {
+      project.items.push({
+        title: input.value,
+        description: textarea.value,
+        date: date.valueAsDate,
+        parent: project.title
+      })
+    }
+    
 
     addToMain(project)
     changeCountNumber(project)
@@ -128,7 +182,7 @@ addProjects.addEventListener('click', () => {
   if (showProjects.classList.contains('active')) {
     const print = new ProjectPrint(newProject)
 
-      print.html()
+    print.html()
   }
   console.log(projectsList)
 })
@@ -137,7 +191,13 @@ function changeCountNumber(project) {
   const projectsTitles = document.querySelectorAll('.projects__text');
 
   let item = Array.from(projectsTitles).find(p => p.innerText == project.title)
-  project.items.length > 0 ? item.parentElement.lastChild.innerText = project.items.length : item.parentElement.lastChild.innerText = '';
+  if (!item) {
+    if (project.title === 'Inbox') {
+      project.items.length > 0 ? inboxBtn.lastChild.innerText = project.items.length : inboxBtn.lastChild.innerText = '';
+    }
+  } else {
+    project.items.length > 0 ? item.parentElement.lastChild.innerText = project.items.length : item.parentElement.lastChild.innerText = '';
+  }
 }
 
 function deleteProject(project) {
@@ -149,4 +209,26 @@ function deleteProject(project) {
   projectsList.splice(projectsList.indexOf(project), 1);
 }
 
-export { addToMain, deleteProject }
+function loadUpcoming() {
+  const allProjects = [inbox].concat(projectsList)
+  const upcomingItems = []
+  for (let i = 0; i < allProjects.length; i++) {
+    upcomingItems.push(...allProjects[i].items.filter(item => item.date !== null))
+  }
+  upcoming.items = upcomingItems.sort()
+  addToMain(upcoming)
+}
+
+function loadToday() {
+  const allProjects = [inbox].concat(projectsList)
+  const todayItems = []
+  for (let i = 0; i < allProjects.length; i++) {
+    todayItems.push(...allProjects[i].items.filter(item => {
+      return item.date !== null && format(item.date, 'MM/dd/yyyy') === format(new Date(), 'MM/dd/yyyy')
+    }))
+  }
+  today.items = todayItems.sort((a,b) => new Date(b.date) - new Date(a.date));
+  addToMain(today)
+}
+
+export { addToMain, deleteProject, projectsList, loadUpcoming, loadToday }
