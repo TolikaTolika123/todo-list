@@ -197,6 +197,7 @@ body {
     list-style: none;
   }
   &__list-item {
+    position: relative;
     border-bottom: 1px solid #f5f5f5;
     padding: 10px;
     &:last-child {
@@ -246,6 +247,11 @@ body {
   }
   &__form-description {
     resize: none;
+  }
+  &__form-date {
+    border: 1px solid #bdc3c7;
+    padding: 4px;
+    border-radius: 4px;
   }
   &__form-add,
   &__form-cancel {
@@ -308,8 +314,27 @@ body {
   }
   &__item-description {
     font-size: 12px;
-    margin: 0 0 0 26px;
+    margin: 0 0 15px 26px;
     color: #95a5a6;
+  }
+  &__item-date {
+    position: relative;
+    margin: 0 20px 0 26px;
+    font-size: $regularFz;
+    &::after {
+      content: '';
+      position: absolute;
+      right: -10px;
+      height: 100%;
+      width: 1px;
+      background-color: #bdc3c7;
+    }
+    &.no-after:after {
+      display: none;
+    }
+  }
+  &__item-parent {
+    font-size: $regularFz;
   }
 }
 

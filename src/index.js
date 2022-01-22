@@ -11,6 +11,4 @@ addToMain(inbox)
 //To Do: 
 
 // localStorage
-// cancel button on form
-// today and upcoming sections
 // change prompt with popup

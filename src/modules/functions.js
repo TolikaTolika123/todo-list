@@ -7,8 +7,8 @@ const showProjects = document.querySelector('.sidebar__list');
 const main = document.querySelector('.main')
 const projects = document.querySelector('.projects');
 
-
 const projectsList = [];
+let allProjects = [inbox].concat(projectsList)
 
 function addToMain(project) {
   main.innerHTML = '';
@@ -43,7 +43,7 @@ function addToMain(project) {
     mainListItem.appendChild(listItemDescription)
 
     const listItemDate = document.createElement('time')
-    listItemDate.classList.add('main__item-date')
+    listItemDate.classList.add('main__item-date', 'no-after')
 
     if (project.items[i].date === null) {
       listItemDate.innerText = ''
@@ -55,6 +55,7 @@ function addToMain(project) {
     mainListItem.appendChild(listItemDate)
 
     if (project.title === 'Upcoming') {
+      listItemDate.classList.remove('no-after')
       const listItemParent = document.createElement('span');
       listItemParent.classList.add('main__item-parent');
       listItemParent.innerText = project.items[i].parent;
@@ -62,6 +63,7 @@ function addToMain(project) {
     }
 
     if (project.title === 'Today') {
+      listItemDate.classList.remove('no-after')
       const listItemParent = document.createElement('span');
       listItemParent.classList.add('main__item-parent');
       listItemParent.innerText = project.items[i].parent;
@@ -107,6 +109,8 @@ function addNewItem(project, e) {
   const textarea = document.querySelector('.main__form-description')
   const date = document.querySelector('.main__form-date');
   const add = document.querySelector(".main__form-add");
+  const cancel = document.querySelector('.main__form-cancel')
+
   input.addEventListener("input", () => {
     input.value === "" ? (add.disabled = true) : (add.disabled = false);
   });
@@ -122,14 +126,16 @@ function addNewItem(project, e) {
         date: date.valueAsDate,
         parent: inbox.title
       })
+      changeCountNumber(inbox)
       loadUpcoming()
-    }else if (project.title === 'Today') {
+    } else if (project.title === 'Today') {
       inbox.items.push({
         title: input.value,
         description: textarea.value,
         date: date.valueAsDate || new Date(),
         parent: inbox.title
       })
+      changeCountNumber(inbox)
       loadToday()
     } else {
       project.items.push({
@@ -139,24 +145,51 @@ function addNewItem(project, e) {
         parent: project.title
       })
     }
-    
+
 
     addToMain(project)
     changeCountNumber(project)
   })
 
-
+  cancel.addEventListener('click', () => {
+    addToMain(project)
+  })
 }
 
 function deleteItem(project) {
   const checkTodo = document.querySelectorAll('.main__item-checkbox');
   const mainListItem = document.querySelectorAll('.main__list-item')
-  for (let i = 0; i < checkTodo.length; i++) {
-    checkTodo[i].addEventListener('click', () => {
-      mainListItem[i].remove()
-      project.items.splice(i, 1);
-      changeCountNumber(project)
-    })
+
+  if (project.title === 'Upcoming') {
+    for (let i = 0; i < checkTodo.length; i++) {
+      checkTodo[i].addEventListener('click', () => {
+        const mainProject = allProjects.find(e => e.title === project.items[i].parent);
+        mainListItem[i].remove()
+        mainProject.items.splice(i, 1);
+
+        changeCountNumber(mainProject)
+        loadUpcoming()
+      })
+    }
+  } else if (project.title === 'Today') {
+    for (let i = 0; i < checkTodo.length; i++) {
+      checkTodo[i].addEventListener('click', () => {
+        const mainProject = allProjects.find(e => e.title === project.items[i].parent);
+        mainListItem[i].remove()
+        mainProject.items.splice(i, 1);
+
+        changeCountNumber(mainProject)
+        loadUpcoming()
+      })
+    }
+  } else {
+    for (let i = 0; i < checkTodo.length; i++) {
+      checkTodo[i].addEventListener('click', () => {
+        mainListItem[i].remove()
+        project.items.splice(i, 1);
+        changeCountNumber(project)
+      })
+    }
   }
 }
 
@@ -178,6 +211,7 @@ addProjects.addEventListener('click', () => {
   let title = prompt('Add project title')
   const newProject = new Project(title);
   projectsList.push(newProject)
+  allProjects = [inbox].concat(projectsList)
 
   if (showProjects.classList.contains('active')) {
     const print = new ProjectPrint(newProject)
@@ -207,10 +241,10 @@ function deleteProject(project) {
 
   item.parentElement.remove();
   projectsList.splice(projectsList.indexOf(project), 1);
+  allProjects = [inbox].concat(projectsList)
 }
 
 function loadUpcoming() {
-  const allProjects = [inbox].concat(projectsList)
   const upcomingItems = []
   for (let i = 0; i < allProjects.length; i++) {
     upcomingItems.push(...allProjects[i].items.filter(item => item.date !== null))
@@ -220,14 +254,13 @@ function loadUpcoming() {
 }
 
 function loadToday() {
-  const allProjects = [inbox].concat(projectsList)
   const todayItems = []
   for (let i = 0; i < allProjects.length; i++) {
     todayItems.push(...allProjects[i].items.filter(item => {
       return item.date !== null && format(item.date, 'MM/dd/yyyy') === format(new Date(), 'MM/dd/yyyy')
     }))
   }
-  today.items = todayItems.sort((a,b) => new Date(b.date) - new Date(a.date));
+  today.items = todayItems.sort((a, b) => new Date(b.date) - new Date(a.date));
   addToMain(today)
 }
 
