@@ -10,7 +10,7 @@ let inbox = new Project('Inbox');
 const today = new Project('Today');
 const upcoming = new Project('Upcoming');
 
-inbox = JSON.parse(localStorage.getItem('inbox'))
+if (JSON.parse(localStorage.getItem('inbox'))) inbox = JSON.parse(localStorage.getItem('inbox'))
 
 inboxBtn.addEventListener('click', () => {
   addToMain(inbox)
