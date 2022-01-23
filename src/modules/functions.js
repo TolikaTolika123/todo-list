@@ -6,6 +6,10 @@ const addProjects = document.querySelector('.sidebar__add')
 const showProjects = document.querySelector('.sidebar__list');
 const main = document.querySelector('.main')
 const projects = document.querySelector('.projects');
+const addProjectsPopup = document.querySelector('.sidebar__popup')
+const popupInput = document.querySelector(".sidebar__form-input");
+const popupCancel = document.querySelector('.sidebar__form-cancel')
+const popupAdd = document.querySelector(".sidebar__form-add");
 
 const projectsList = [];
 let allProjects = [inbox].concat(projectsList)
@@ -208,18 +212,34 @@ showProjects.addEventListener('click', () => {
 })
 
 addProjects.addEventListener('click', () => {
-  let title = prompt('Add project title')
-  const newProject = new Project(title);
-  projectsList.push(newProject)
-  allProjects = [inbox].concat(projectsList)
-
-  if (showProjects.classList.contains('active')) {
-    const print = new ProjectPrint(newProject)
-
-    print.html()
-  }
-  console.log(projectsList)
+  addProjectsPopup.style.display = 'block';
 })
+
+popupInput.addEventListener("input", () => {
+  popupInput.value === "" ? (popupAdd.disabled = true) : (popupAdd.disabled = false);
+});
+
+popupAdd.addEventListener('click', () => {
+  if (allProjects.find(project => project.title === popupInput.value ) || popupInput.value === 'Today' || popupInput.value === 'Upcoming') {
+    alert('Name already taken');
+  } else {
+    popupAdd.disabled = true
+    addProjectsPopup.style.display = 'none';
+
+    const newProject = new Project(popupInput.value);
+    popupInput.value = '';
+
+    projectsList.push(newProject)
+    allProjects = [inbox].concat(projectsList)
+    
+    if (showProjects.classList.contains('active')) {
+      const print = new ProjectPrint(newProject)
+      
+      print.html()
+    }
+  }
+})
+
 
 function changeCountNumber(project) {
   const projectsTitles = document.querySelectorAll('.projects__text');
