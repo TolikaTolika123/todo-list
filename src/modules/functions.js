@@ -11,7 +11,17 @@ const popupInput = document.querySelector(".sidebar__form-input");
 const popupCancel = document.querySelector('.sidebar__form-cancel')
 const popupAdd = document.querySelector(".sidebar__form-add");
 
-const projectsList = [];
+let projectsList = [];
+
+if (JSON.parse(localStorage.getItem('projects'))) {
+  projectsList = JSON.parse(localStorage.getItem('projects'))
+  for (let i = 0; i < projectsList; i++) {
+    for (let j = 0; j < projectsList[i].items.length; j++) {
+      projectsList[i].items[j].date = new Date(projectsList[i].items[j].date)
+    }
+  }
+}
+
 let allProjects = [inbox].concat(projectsList)
 
 function addToMain(project) {
@@ -51,10 +61,10 @@ function addToMain(project) {
 
     if (project.items[i].date === null) {
       listItemDate.innerText = ''
-    } else if (format(project.items[i].date, 'MM/dd/yyyy') === format(new Date(), 'MM/dd/yyyy')) {
+    } else if (format(new Date(project.items[i].date), 'MM/dd/yyyy') === format(new Date(), 'MM/dd/yyyy')) {
       listItemDate.innerText = 'Today'
     } else {
-      listItemDate.innerText = formatDistance(endOfYesterday(), project.items[i].date)
+      listItemDate.innerText = formatDistance(endOfYesterday(), new Date(project.items[i].date))
     }
     mainListItem.appendChild(listItemDate)
 
@@ -153,6 +163,8 @@ function addNewItem(project, e) {
 
     addToMain(project)
     changeCountNumber(project)
+    localStorage.setItem('inbox', JSON.stringify(inbox));
+    localStorage.setItem('projects', JSON.stringify(projectsList))
   })
 
   cancel.addEventListener('click', () => {
@@ -195,6 +207,9 @@ function deleteItem(project) {
       })
     }
   }
+
+  localStorage.setItem('inbox', JSON.stringify(inbox));
+  localStorage.setItem('projects', JSON.stringify(projectsList))
 }
 
 showProjects.addEventListener('click', () => {
@@ -220,7 +235,7 @@ popupInput.addEventListener("input", () => {
 });
 
 popupAdd.addEventListener('click', () => {
-  if (allProjects.find(project => project.title === popupInput.value ) || popupInput.value === 'Today' || popupInput.value === 'Upcoming') {
+  if (allProjects.find(project => project.title === popupInput.value) || popupInput.value === 'Today' || popupInput.value === 'Upcoming') {
     alert('Name already taken');
   } else {
     popupAdd.disabled = true
@@ -231,10 +246,11 @@ popupAdd.addEventListener('click', () => {
 
     projectsList.push(newProject)
     allProjects = [inbox].concat(projectsList)
-    
+    localStorage.setItem('projects', JSON.stringify(projectsList))
+
     if (showProjects.classList.contains('active')) {
       const print = new ProjectPrint(newProject)
-      
+
       print.html()
     }
   }
@@ -269,6 +285,7 @@ function deleteProject(project) {
   item.parentElement.remove();
   projectsList.splice(projectsList.indexOf(project), 1);
   allProjects = [inbox].concat(projectsList)
+  localStorage.setItem('projects', JSON.stringify(projectsList))
 }
 
 function loadUpcoming() {

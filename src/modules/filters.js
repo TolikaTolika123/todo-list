@@ -6,10 +6,11 @@ const todayBtn = document.querySelector('.filters__item-btn.today')
 const upcomingBtn = document.querySelector('.filters__item-btn.upcoming')
 const main = document.querySelector('.main')
 
-const inbox = new Project('Inbox');
+let inbox = new Project('Inbox');
 const today = new Project('Today');
 const upcoming = new Project('Upcoming');
 
+inbox = JSON.parse(localStorage.getItem('inbox'))
 
 inboxBtn.addEventListener('click', () => {
   addToMain(inbox)

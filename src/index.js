@@ -6,7 +6,3 @@ import {inbox} from "@modules/filters";
 import '/styles/style.scss';
 
 addToMain(inbox)
-
-//To Do: 
-
-// localStorage
