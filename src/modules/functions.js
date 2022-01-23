@@ -240,6 +240,13 @@ popupAdd.addEventListener('click', () => {
   }
 })
 
+function toggleActive(project) {
+  const projectsWithFilters = document.querySelectorAll('.filters__item, .projects__item');
+  projectsWithFilters.forEach(item => item.classList.remove('active'));
+
+  const item = Array.from(projectsWithFilters).find(e => e.innerText == project.title);
+  item.classList.add('active')
+}
 
 function changeCountNumber(project) {
   const projectsTitles = document.querySelectorAll('.projects__text');
@@ -284,4 +291,4 @@ function loadToday() {
   addToMain(today)
 }
 
-export { addToMain, deleteProject, projectsList, loadUpcoming, loadToday }
+export { addToMain, deleteProject, projectsList, loadUpcoming, loadToday, toggleActive }

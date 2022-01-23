@@ -1,4 +1,4 @@
-import { addToMain, deleteProject} from './functions'
+import { addToMain, toggleActive, deleteProject } from './functions'
 
 const projects = document.querySelector('.projects');
 
@@ -30,8 +30,8 @@ class ProjectPrint {
     const count = document.createElement('span');
     count.classList.add('count');
     li.appendChild(count)
-    
-    
+
+
 
     const deleteItem = li.querySelector('.projects__item-delete')
 
@@ -41,6 +41,8 @@ class ProjectPrint {
 
     li.addEventListener('click', () => {
       addToMain(this.project)
+      toggleActive(this.project)
+
     })
     projects.appendChild(li)
   }

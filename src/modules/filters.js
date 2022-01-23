@@ -1,4 +1,4 @@
-import { addToMain, projectsList, loadUpcoming, loadToday } from "./functions"
+import { addToMain, projectsList, loadUpcoming, loadToday, toggleActive } from "./functions"
 import { Project } from "./projects"
 
 const inboxBtn = document.querySelector('.filters__item-btn.inbox')
@@ -13,14 +13,17 @@ const upcoming = new Project('Upcoming');
 
 inboxBtn.addEventListener('click', () => {
   addToMain(inbox)
+  toggleActive(inbox)
 })
 
 todayBtn.addEventListener('click', () => {
   loadToday()
+  toggleActive(today)
 })
 
 upcomingBtn.addEventListener('click', () => {
   loadUpcoming()
+  toggleActive(upcoming)
 })
 
 

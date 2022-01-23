@@ -7,8 +7,6 @@ import '/styles/style.scss';
 
 addToMain(inbox)
 
-
 //To Do: 
 
 // localStorage
-// change prompt with popup
