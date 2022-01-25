@@ -256,6 +256,10 @@ popupAdd.addEventListener('click', () => {
   }
 })
 
+popupCancel.addEventListener('click', () => {
+  addProjectsPopup.style.display = 'none';
+})
+
 function toggleActive(project) {
   const projectsWithFilters = document.querySelectorAll('.filters__item, .projects__item');
   projectsWithFilters.forEach(item => item.classList.remove('active'));
