@@ -11,17 +11,7 @@ const popupInput = document.querySelector(".sidebar__form-input");
 const popupCancel = document.querySelector('.sidebar__form-cancel')
 const popupAdd = document.querySelector(".sidebar__form-add");
 
-let projectsList = [];
-
-if (JSON.parse(localStorage.getItem('projects'))) {
-  projectsList = JSON.parse(localStorage.getItem('projects'))
-  for (let i = 0; i < projectsList; i++) {
-    for (let j = 0; j < projectsList[i].items.length; j++) {
-      projectsList[i].items[j].date = new Date(projectsList[i].items[j].date)
-    }
-  }
-}
-
+const projectsList = JSON.parse(localStorage.getItem('projects')) || [];
 let allProjects = [inbox].concat(projectsList)
 
 function addToMain(project) {
@@ -297,7 +287,7 @@ function loadUpcoming() {
   for (let i = 0; i < allProjects.length; i++) {
     upcomingItems.push(...allProjects[i].items.filter(item => item.date !== null))
   }
-  upcoming.items = upcomingItems.sort()
+  upcoming.items = upcomingItems.sort((a, b) => new Date(a.date) - new Date(b.date))
   addToMain(upcoming)
 }
 
@@ -305,10 +295,10 @@ function loadToday() {
   const todayItems = []
   for (let i = 0; i < allProjects.length; i++) {
     todayItems.push(...allProjects[i].items.filter(item => {
-      return item.date !== null && format(item.date, 'MM/dd/yyyy') === format(new Date(), 'MM/dd/yyyy')
+      return item.date !== null && format(new Date(item.date), 'MM/dd/yyyy') === format(new Date(), 'MM/dd/yyyy')
     }))
   }
-  today.items = todayItems.sort((a, b) => new Date(b.date) - new Date(a.date));
+  today.items = todayItems;
   addToMain(today)
 }
 
