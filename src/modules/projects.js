@@ -35,7 +35,8 @@ class ProjectPrint {
 
     const deleteItem = li.querySelector('.projects__item-delete')
 
-    deleteItem.addEventListener('click', () => {
+    deleteItem.addEventListener('click', e => {
+      e.stopPropagation()
       deleteProject(this.project)
     })
 

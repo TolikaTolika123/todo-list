@@ -11,10 +11,21 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 
-<body>
+<body class="body menuActive">
+  <header class="header">
+      <button class="menu__btn">
+        <img src="./assets/images/burger-btn.svg" alt="Toggle menu">
+      </button>
+    <div class="user-info">
+      <div hidden class="user-picture"></div>
+      <p hidden class="user-name"></p>
+      <button hidden class="sign-out">Sign out</button>
+      <button class="sign-in">Sign in</button>
+    </div>
+  </header>
   <div class="menu">
     <ul class="filters">
-      <li class="filters__item">
+      <li class="filters__item inbox">
         <button class="filters__item-btn inbox">Inbox <span class="count"></span></button>
       </li>
       <li class="filters__item">

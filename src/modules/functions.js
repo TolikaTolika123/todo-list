@@ -1,7 +1,14 @@
 import { Project, ProjectPrint } from './projects'
 import { inbox, inboxBtn, today, upcoming } from './filters';
 import { format, formatDistance, endOfYesterday } from 'date-fns'
+import { isUserSignedIn, projectsList } from './auth';
 
+import { updateDoc, doc } from 'firebase/firestore';
+import { db } from "../index";
+import { getAuth } from 'firebase/auth';
+import toDate from 'date-fns/esm/fp/toDate/index.js';
+
+const body = document.querySelector('.body')
 const addProjects = document.querySelector('.sidebar__add')
 const showProjects = document.querySelector('.sidebar__list');
 const main = document.querySelector('.main')
@@ -10,9 +17,26 @@ const addProjectsPopup = document.querySelector('.sidebar__popup')
 const popupInput = document.querySelector(".sidebar__form-input");
 const popupCancel = document.querySelector('.sidebar__form-cancel')
 const popupAdd = document.querySelector(".sidebar__form-add");
+const showMenu = document.querySelector('.menu__btn');
 
-const projectsList = JSON.parse(localStorage.getItem('projects')) || [];
-let allProjects = [inbox].concat(projectsList)
+let allProjects = [inbox].concat(projectsList);
+
+async function loadData(project) {
+  if (project.title === 'Inbox') {
+    if (isUserSignedIn()) {
+      await updateDoc(doc(db, 'users', getAuth().currentUser.uid), { inbox: inbox.items })
+    } else {
+      localStorage.setItem('inbox', JSON.stringify(inbox.items))
+    }
+  } else {
+    if (isUserSignedIn()) {
+      const projectsListArray = projectsList.map((obj) => { return Object.assign({}, obj) });
+      await updateDoc(doc(db, 'users', getAuth().currentUser.uid), { projects: projectsListArray })
+    } else {
+      localStorage.setItem('projects', JSON.stringify(projectsList))
+    }
+  }
+}
 
 function addToMain(project) {
   main.innerHTML = '';
@@ -99,6 +123,7 @@ function addToMain(project) {
 }
 
 function addNewItem(project, e) {
+  e.preventDefault()
   e.path[1].innerHTML = `<form class="main__form-create">
   <div>
     <input type="text" class="main__form-title" placeholder="e.g., Family lunch on Sunday at 11am">
@@ -111,7 +136,7 @@ function addNewItem(project, e) {
 
   const input = document.querySelector(".main__form-title");
   const textarea = document.querySelector('.main__form-description')
-  const date = document.querySelector('.main__form-date');
+  const dateElement = document.querySelector('.main__form-date');
   const add = document.querySelector(".main__form-add");
   const cancel = document.querySelector('.main__form-cancel')
 
@@ -120,14 +145,15 @@ function addNewItem(project, e) {
   });
 
   let today = new Date().toISOString().slice(0, 10);
-  date.setAttribute('min', today)
-
+  dateElement.setAttribute('min', today)
   add.addEventListener('click', () => {
+    let date = null;
+    if (dateElement.valueAsDate) date = dateElement.valueAsDate.toISOString();
     if (project.title === 'Upcoming') {
       inbox.items.push({
         title: input.value,
         description: textarea.value,
-        date: date.valueAsDate,
+        date: date,
         parent: inbox.title
       })
       changeCountNumber(inbox)
@@ -136,7 +162,7 @@ function addNewItem(project, e) {
       inbox.items.push({
         title: input.value,
         description: textarea.value,
-        date: date.valueAsDate || new Date(),
+        date: date || new Date().toISOString(),
         parent: inbox.title
       })
       changeCountNumber(inbox)
@@ -145,16 +171,15 @@ function addNewItem(project, e) {
       project.items.push({
         title: input.value,
         description: textarea.value,
-        date: date.valueAsDate,
+        date: date,
         parent: project.title
       })
     }
 
-
     addToMain(project)
     changeCountNumber(project)
-    localStorage.setItem('inbox', JSON.stringify(inbox));
-    localStorage.setItem('projects', JSON.stringify(projectsList))
+
+    loadData(project)
   })
 
   cancel.addEventListener('click', () => {
@@ -162,7 +187,7 @@ function addNewItem(project, e) {
   })
 }
 
-function deleteItem(project) {
+async function deleteItem(project) {
   const checkTodo = document.querySelectorAll('.main__item-checkbox');
   const mainListItem = document.querySelectorAll('.main__list-item')
 
@@ -172,9 +197,9 @@ function deleteItem(project) {
         const mainProject = allProjects.find(e => e.title === project.items[i].parent);
         mainListItem[i].remove()
         mainProject.items.splice(i, 1);
-
         changeCountNumber(mainProject)
         loadUpcoming()
+        loadData(project)
       })
     }
   } else if (project.title === 'Today') {
@@ -183,9 +208,11 @@ function deleteItem(project) {
         const mainProject = allProjects.find(e => e.title === project.items[i].parent);
         mainListItem[i].remove()
         mainProject.items.splice(i, 1);
+        localStorage.setItem('inbox', JSON.stringify(inbox.items));
 
         changeCountNumber(mainProject)
         loadUpcoming()
+        loadData(project)
       })
     }
   } else {
@@ -194,22 +221,29 @@ function deleteItem(project) {
         mainListItem[i].remove()
         project.items.splice(i, 1);
         changeCountNumber(project)
+        loadData(project)
       })
     }
   }
+  if (!isUserSignedIn()) {
+    localStorage.setItem('inbox', JSON.stringify(inbox.items));
+    localStorage.setItem('projects', JSON.stringify(projectsList))
+  }
 
-  localStorage.setItem('inbox', JSON.stringify(inbox));
-  localStorage.setItem('projects', JSON.stringify(projectsList))
 }
+
+showMenu.addEventListener('click', () => {
+  body.classList.toggle('menuActive')
+})
 
 showProjects.addEventListener('click', () => {
   showProjects.classList.toggle('active')
   if (showProjects.classList.contains('active')) {
     for (let i = 0; i < projectsList.length; i++) {
       const print = new ProjectPrint(projectsList[i])
-
       print.html()
     }
+    projectsList.forEach(project => changeCountNumber(project));
   } else {
     projects.innerHTML = ''
   }
@@ -224,7 +258,8 @@ popupInput.addEventListener("input", () => {
   popupInput.value === "" ? (popupAdd.disabled = true) : (popupAdd.disabled = false);
 });
 
-popupAdd.addEventListener('click', () => {
+popupAdd.addEventListener('click', async () => {
+  allProjects = [inbox].concat(projectsList);
   if (allProjects.find(project => project.title === popupInput.value) || popupInput.value === 'Today' || popupInput.value === 'Upcoming') {
     alert('Name already taken');
   } else {
@@ -235,8 +270,12 @@ popupAdd.addEventListener('click', () => {
     popupInput.value = '';
 
     projectsList.push(newProject)
-    allProjects = [inbox].concat(projectsList)
-    localStorage.setItem('projects', JSON.stringify(projectsList))
+    if (isUserSignedIn()) {
+      const projectsListArray = projectsList.map((obj) => { return Object.assign({}, obj) });
+      await updateDoc(doc(db, 'users', getAuth().currentUser.uid), { projects: projectsListArray })
+    } else {
+      localStorage.setItem('projects', JSON.stringify(projectsList))
+    }
 
     if (showProjects.classList.contains('active')) {
       const print = new ProjectPrint(newProject)
@@ -253,8 +292,10 @@ popupCancel.addEventListener('click', () => {
 function toggleActive(project) {
   const projectsWithFilters = document.querySelectorAll('.filters__item, .projects__item');
   projectsWithFilters.forEach(item => item.classList.remove('active'));
-
-  const item = Array.from(projectsWithFilters).find(e => e.innerText == project.title);
+  let item = Array.from(projectsWithFilters).find(e => e.innerText == project.title);
+  if (!item && project === inbox) {
+    item = document.querySelector('.filters__item.inbox');
+  }
   item.classList.add('active')
 }
 
@@ -271,18 +312,23 @@ function changeCountNumber(project) {
   }
 }
 
-function deleteProject(project) {
+async function deleteProject(project) {
   const projectsTitles = document.querySelectorAll('.projects__text');
 
   let item = Array.from(projectsTitles).find(p => p.innerText == project.title)
-
   item.parentElement.remove();
   projectsList.splice(projectsList.indexOf(project), 1);
-  allProjects = [inbox].concat(projectsList)
-  localStorage.setItem('projects', JSON.stringify(projectsList))
+  if (isUserSignedIn()) {
+    const projectsListArray = projectsList.map((obj) => { return Object.assign({}, obj) });
+    await updateDoc(doc(db, 'users', getAuth().currentUser.uid), { projects: projectsListArray })
+  } else {
+    localStorage.setItem('projects', JSON.stringify(projectsList))
+  }
+
 }
 
 function loadUpcoming() {
+  allProjects = [inbox].concat(projectsList);
   const upcomingItems = []
   for (let i = 0; i < allProjects.length; i++) {
     upcomingItems.push(...allProjects[i].items.filter(item => item.date !== null))
@@ -292,6 +338,7 @@ function loadUpcoming() {
 }
 
 function loadToday() {
+  allProjects = [inbox].concat(projectsList);
   const todayItems = []
   for (let i = 0; i < allProjects.length; i++) {
     todayItems.push(...allProjects[i].items.filter(item => {
@@ -302,4 +349,4 @@ function loadToday() {
   addToMain(today)
 }
 
-export { addToMain, deleteProject, projectsList, loadUpcoming, loadToday, toggleActive }
+export { addToMain, deleteProject, loadUpcoming, loadToday, toggleActive, changeCountNumber }
