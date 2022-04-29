@@ -18,5 +18,4 @@ Repo: https://github.com/TolikaTolika123/todo-list
 
 P. S. 
 This is educational project, and done as assignment for https://www.theodinproject.com/ 
-
 inspiration for it was taken from https://www.theodinproject.com/
