@@ -2,7 +2,7 @@
 
 this web-page create projects and todos for them which will help you with your productivicy.
 
-Advantages:
+## Features
 
 * simple and baeutyfull design
 * user can create todos
